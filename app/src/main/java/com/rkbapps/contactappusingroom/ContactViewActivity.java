@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -58,6 +59,7 @@ public class ContactViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Dialog d = new Dialog(ContactViewActivity.this);
                 d.setContentView(R.layout.add_contact_dialog);
+                d.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
                 Button cancel = d.findViewById(R.id.btnCancel);
                 Button save = d.findViewById(R.id.btnSave);
                 EditText name = d.findViewById(R.id.etName);
@@ -119,7 +121,6 @@ public class ContactViewActivity extends AppCompatActivity {
     private void setData(Contact contact){
         strName = contact.getName();
         char c[] = strName.toCharArray();
-
         contactAvtar.setText("" + c[0]);
         txtName.setText(strName);
         txtPhoneNumber.setText(contact.getMobileNumber());

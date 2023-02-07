@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Dialog d = new Dialog(MainActivity.this);
                 d.setContentView(R.layout.add_contact_dialog);
+                d.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
                 Button cancel = d.findViewById(R.id.btnCancel);
                 Button save = d.findViewById(R.id.btnSave);
                 EditText name = d.findViewById(R.id.etName);
