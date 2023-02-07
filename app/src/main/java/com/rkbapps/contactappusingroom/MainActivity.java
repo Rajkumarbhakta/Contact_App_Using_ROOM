@@ -2,16 +2,20 @@ package com.rkbapps.contactappusingroom;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.rkbapps.contactappusingroom.db.Contact;
 import com.rkbapps.contactappusingroom.db.ContactDatabase;
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     FloatingActionButton btnAdd;
+    Toolbar toolbar;
     ContactDatabase contactDatabase;
     List<Contact> contactList = new ArrayList<>();
     MyAdapter adapter;
@@ -33,25 +38,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
+        toolbar=findViewById(R.id.toolBar);
         btnAdd = findViewById(R.id.addBtn);
+        setSupportActionBar(toolbar);
+
+
         contactDatabase = Room.databaseBuilder(getApplicationContext(), ContactDatabase.class, "ContactDB")
                 .allowMainThreadQueries()
                 .build();
-
-        contactList.addAll(contactDatabase.getContactDao().getAllContacts());
-        adapter = new MyAdapter(this, contactList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+        setData();
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                long currentId = contactList.get(position).getId();
 
+                Intent i = new Intent(MainActivity.this,ContactViewActivity.class);
+                i.putExtra("id",currentId);
+                startActivity(i);
             }
 
             @Override
             public void onLongClick(View view, int position) {
-
+                new MaterialAlertDialogBuilder(MainActivity.this).setTitle("Alert!")
+                        .setMessage("Are you sure to delete this contact?").setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do nothing
+                            }
+                        }).setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //delete a contact
+                                contactDatabase.getContactDao().deleteContact(contactList.get(position));
+                                contactList.remove(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }).setIcon(R.drawable.clear)
+                        .show();
             }
         }));
 
@@ -83,8 +107,12 @@ public class MainActivity extends AppCompatActivity {
                 d.show();
             }
         });
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setData();
     }
 
     private void createContact(String name, String mobileNumber, String email) {
@@ -113,5 +141,13 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void setData(){
+        contactList.clear();
+        contactList.addAll(contactDatabase.getContactDao().getAllContacts());
+        adapter = new MyAdapter(this, contactList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 }
