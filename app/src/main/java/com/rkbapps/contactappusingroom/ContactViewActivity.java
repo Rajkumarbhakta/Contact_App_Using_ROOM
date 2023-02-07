@@ -47,6 +47,7 @@ public class ContactViewActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolBarContactView);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Contact Details");
 
         cd = Room.databaseBuilder(this, ContactDatabase.class, "ContactDB").allowMainThreadQueries().build();
 
