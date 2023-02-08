@@ -119,6 +119,7 @@ public class ContactViewActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void setData(Contact contact){
         strName = contact.getName();
         char c[] = strName.toCharArray();
